@@ -1,0 +1,37 @@
+@import 'variables';
+
+.ship-card {
+  display: flex;
+  background-color: $card-bg-color;
+  border-radius: $card-border-radius;
+
+  .ship-info {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-grow: 1;
+  }
+
+  .ship-title {
+    font-size: 1.25rem;
+    margin-bottom: 5px;
+  }
+
+  // ... добавьте стили для других классов .ship-level, .ship-nation, .ship-type, .ship-description
+}
+
+.filter-form {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+  select {
+    padding: 10px;
+    margin-right: 10px;
+    border: 1px solid $select-border-color;
+    border-radius: $select-border-radius;
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+}
