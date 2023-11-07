@@ -1,5 +1,5 @@
 export interface IShips {
-  [x: string]: Key | null | undefined
+  [x: string]: Key
   title: string
   description: string
   icons: {
