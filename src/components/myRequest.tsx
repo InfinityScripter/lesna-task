@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import {
   Accordion,
   AccordionItem,
@@ -8,69 +8,15 @@ import {
   Flex,
   Box,
   Button,
-  Grid,
-  Image
+  Heading
 } from '@chakra-ui/react'
 import ShipCard from './ShipCard'
 import Loader from './Loader/Loader'
-
-const GET_DATA = gql`
-  query allShips {
-    vehicles {
-      title
-      description
-      icons {
-        large
-        medium
-      }
-      level
-      type {
-        name
-        title
-        icons {
-          default
-        }
-      }
-      nation {
-        name
-        title
-        color
-        icons {
-          small
-          medium
-          large
-        }
-      }
-    }
-  }
-`
-
-export interface IShips {
-  title: string
-  description: string
-  icons: {
-    large: string
-    medium: string
-  }
-  level: number
-  type: {
-    name: string
-    title: string
-    icons: {
-      default: string
-    }
-  }
-  nation: {
-    name: string
-    title: string
-    color: string
-    icons: {
-      large: string
-      medium: string
-      small: string
-    }
-  }
-}
+import { IShips } from '../vite-env'
+import { GET_DATA } from '../queries'
+import LevelFilter from './LevelFilter'
+import NationFilter from './NationFilter'
+import TypeShipList from './TypeShipList'
 
 const ApiRequest = () => {
   const { loading, error, data } = useQuery<{ vehicles: IShips[] }>(GET_DATA)
@@ -88,31 +34,37 @@ const ApiRequest = () => {
     filterType: 'level' | 'nation' | 'type',
     value: string
   ) => {
-    let filterState
-    let setFilterState
-
     switch (filterType) {
       case 'level':
-        filterState = filterLevel
-        setFilterState = setFilterLevel
+        setFilterLevel((prevState) => {
+          if (prevState.includes(value)) {
+            return prevState.filter((item) => item !== value)
+          } else {
+            return [...prevState, value]
+          }
+        })
         break
       case 'nation':
-        filterState = filterNation
-        setFilterState = setFilterNation
+        setFilterNation((prevState) => {
+          if (prevState.includes(value)) {
+            return prevState.filter((item) => item !== value)
+          } else {
+            return [...prevState, value]
+          }
+        })
         break
       case 'type':
-        filterState = filterType
-        setFilterState = setFilterType
+        setFilterType((prevState) => {
+          if (prevState.includes(value)) {
+            return prevState.filter((item) => item !== value)
+          } else {
+            return [...prevState, value]
+          }
+        })
+        break
+      default:
         break
     }
-
-    setFilterState((prevState: string[]) => {
-      if (prevState.includes(value)) {
-        return prevState.filter((item) => item !== value)
-      } else {
-        return [...prevState, value]
-      }
-    })
   }
 
   const handleResetFilters = () => {
@@ -176,25 +128,20 @@ const ApiRequest = () => {
   return (
     <Flex p={4} direction="row">
       <Box pr={4} width="25%">
+        <Heading mb={4} size="md">
+          Выбери свой корабль
+        </Heading>
         <Accordion mb={4} allowMultiple index={expandedIndices}>
           <AccordionItem p={1}>
             <AccordionButton onClick={() => handleFilterSelection(0)}>
               Level Filter
             </AccordionButton>
             <AccordionPanel>
-              <Grid templateColumns="repeat(2, 1fr)" gap={2}>
-                {levels.map((level) => (
-                  <Button
-                    key={level}
-                    onClick={() => handleFilterClick('level', level.toString())}
-                    colorScheme={
-                      filterLevel.includes(level.toString()) ? 'blue' : 'gray'
-                    }
-                  >
-                    Level {level}
-                  </Button>
-                ))}
-              </Grid>
+              <LevelFilter
+                levels={levels}
+                filterLevel={filterLevel}
+                handleFilterClick={handleFilterClick}
+              />
             </AccordionPanel>
           </AccordionItem>
           <AccordionItem p={1}>
@@ -202,23 +149,12 @@ const ApiRequest = () => {
               Nation Filter
             </AccordionButton>
             <AccordionPanel>
-              <Grid templateColumns="repeat(2, 1fr)" gap={2}>
-                {nations.map((nation) => (
-                  <Button
-                    key={nation}
-                    onClick={() => handleFilterClick('nation', nation)}
-                    colorScheme={
-                      filterNation.includes(nation) ? 'blue' : 'gray'
-                    }
-                    leftIcon={
-                      <Image src={nationIcons[nation]} boxSize="30px" />
-                    }
-                    justifyContent="flex-start"
-                  >
-                    {nation}
-                  </Button>
-                ))}
-              </Grid>
+              <NationFilter
+                nations={nations}
+                filterNation={filterNation}
+                handleFilterClick={handleFilterClick}
+                nationIcons={nationIcons}
+              />
             </AccordionPanel>
           </AccordionItem>
 
@@ -227,19 +163,12 @@ const ApiRequest = () => {
               Type Filter
             </AccordionButton>
             <AccordionPanel>
-              <Grid templateColumns="repeat(2, 1fr)" gap={2}>
-                {types.map((type) => (
-                  <Button
-                    key={type}
-                    onClick={() => handleFilterClick('type', type)}
-                    colorScheme={filterType.includes(type) ? 'blue' : 'gray'}
-                    leftIcon={<Image src={typeIcons[type]} boxSize="30px" />}
-                    justifyContent="flex-start"
-                  >
-                    {type}
-                  </Button>
-                ))}
-              </Grid>
+              <TypeShipList
+                types={types}
+                filterType={filterType}
+                handleFilterClick={handleFilterClick}
+                typeIcons={typeIcons}
+              />
             </AccordionPanel>
           </AccordionItem>
         </Accordion>
@@ -248,6 +177,9 @@ const ApiRequest = () => {
         </Button>
       </Box>
       <Box pl={4} width="75%">
+        <Heading mb={4} size="md">
+          Все корабли
+        </Heading>
         {filteredVehicles?.length === 0 ? (
           <p>Ничего не найдено</p>
         ) : (

@@ -13,7 +13,12 @@ const colors = {
   }
 }
 
-const theme = extendTheme({ colors })
+const fonts = {
+  heading: 'Roboto Condensed',
+  body: 'Roboto Condensed'
+}
+
+const theme = extendTheme({ colors }, { fonts })
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

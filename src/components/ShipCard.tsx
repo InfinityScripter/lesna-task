@@ -1,5 +1,5 @@
 import React from 'react'
-import { IShips } from './myRequest'
+import { IShips } from '../vite-env'
 import { Image, Text, Heading, VStack, Flex, Spacer } from '@chakra-ui/react'
 
 interface ShipCardProps {
@@ -22,6 +22,7 @@ const ShipCard: React.FC<ShipCardProps> = ({ battleShips: ship }) => {
         src={ship.icons.medium}
         alt={ship.title}
         height="100%"
+        width="350px"
         objectFit="cover"
         mr={2}
       />
